@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Report</title>
+</head>
+<body>
+
+<h2>Generated Report</h2>
+
+<table border="1">
+    <tr>
+        <th>Details</th>
+        <th>Count</th>
+    </tr>
+    {% for ip, data in report.items() %}
+        <tr>
+            <td>IP Address: {{ ip }}</td>
+            <td>{{ data['Total'] }}</td>
+        </tr>
+        {% for time_key, url_data in data['TimeData'].items() %}
+            <tr>
+                <td>&emsp;&emsp;Time: {{ time_key }}</td>
+                <td>{{ url_data['Total'] }}</td>
+            </tr>
+            {% for url, count in url_data['URLs'].items() %}
+                <tr>
+                    <td>&emsp;&emsp;&emsp;&emsp;URL: {{ url }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+</table>
+
+</body>
+</html>
