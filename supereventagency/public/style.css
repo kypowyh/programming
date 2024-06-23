@@ -1,0 +1,101 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #cecfcf;
+    margin: 0;
+    padding: 20px;
+    color: #000000; /* Изменяем цвет текста на черный */
+}
+
+h1, h2 {
+    color: #000000; /* Изменяем цвет заголовков на черный */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    margin-bottom: 10px; /* Уменьшаем нижний отступ для h1 */
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #dedede;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(222, 221, 221, 0.2);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
+
+label {
+    margin-bottom: 5px;
+    color: #0f0f0f;
+}
+
+input, select {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #c8c6c6;
+    border-radius: 5px;
+    background-color: #b5b5b5;
+    color: #fff;
+}
+
+input:focus, select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+button {
+    padding: 10px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.error {
+    color: red;
+    margin-top: 5px;
+    text-align: center;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #0056b3;
+}
+
+p {
+    text-align: center;
+    margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+    form {
+        width: 100%;
+    }
+}

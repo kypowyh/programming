@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Event</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Создание мероприятия</h2>
+        <form id="createEventForm" action="/createevent" method="POST">
+            <label for="title">Название мероприятия:</label>
+            <input type="text" id="title" name="title" required>
+            <label for="count">Кол-во участников:</label>
+            <input type="number" id="count" name="count" required>
+            <label for="start">Время, дата начала:</label>
+            <input type="datetime-local" id="start" name="start" required>
+            <label for="end">Время, дата окончания:</label>
+            <input type="datetime-local" id="end" name="end" required>
+            <label for="adress">Адрес:</label>
+            <input type="text" id="adress" name="adress" required>
+            <label for="info">Информация о мероприятии:</label>
+            <textarea id="info" name="info" required></textarea>
+            <input type="hidden" id="userEmail" name="userEmail" value="">
+            <button type="submit">Создать мероприятие</button>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            const email = params.get('email');
+            if (email) {
+                document.getElementById('userEmail').value = email;
+            }
+        });
+    </script>
+</body>
+</html>

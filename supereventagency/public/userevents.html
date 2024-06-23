@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ваши мероприятия</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        #createEventButton {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #createEventButton:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .event-item button {
+            padding: 5px 10px;
+            color: #fff;
+            background-color: #dc3545;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .event-item button:hover {
+            background-color: #c82333;
+        }
+
+        .no-events {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+        }
+
+        .participant-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .participant-item:last-child {
+            border-bottom: none;
+        }
+
+        .participant-name {
+            font-weight: bold;
+        }
+
+        .participant-email {
+            color: #555;
+        }
+
+        .no-participants {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Ваши мероприятия</h2>
+        <button id="createEventButton">Создать новое мероприятие</button>
+        <div id="eventsList"></div>
+        <div id="participantsList" style="display: none;">
+            <h3>Участники мероприятия</h3>
+            <div id="participants"></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            const email = params.get('email');
+            
+            if (email) {
+                fetch(`/api/events?email=${encodeURIComponent(email)}`)
+                    .then(response => response.json())
+                    .then(events => {
+                        const eventsList = document.getElementById('eventsList');
+                        if (events.length > 0) {
+                            const table = document.createElement('table');
+                            table.innerHTML = `
+                                <thead>
+                                    <tr>
+                                        <th>Название</th>
+                                        <th>Кол-во участников</th>
+                                        <th>Дата начала</th>
+                                        <th>Дата окончания</th>
+                                        <th>Адрес</th>
+                                        <th>Информация</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            `;
+                            eventsList.appendChild(table);
+                            const tbody = table.querySelector('tbody');
+                            events.forEach(event => {
+                                const row = document.createElement('tr');
+                                row.className = 'event-item';
+                                row.innerHTML = `
+                                    <td>${event.title}</td>
+                                    <td>${event.count}</td>
+                                    <td>${new Date(event.start).toLocaleString()}</td>
+                                    <td>${new Date(event.end).toLocaleString()}</td>
+                                    <td>${event.adress}</td>
+                                    <td>${event.info}</td>
+                                    <td>
+                                        <button class="viewParticipantsButton" data-event-id="${event.eventID}">Посмотреть участников</button>
+                                        <button class="deleteEventButton" data-event-id="${event.eventID}">Удалить</button>
+                                    </td>
+                                `;
+                                tbody.appendChild(row);
+                            });
+
+                            // Обработка нажатия на кнопку "Удалить"
+                            document.querySelectorAll('.deleteEventButton').forEach(button => {
+                                button.addEventListener('click', function () {
+                                    const eventID = this.getAttribute('data-event-id');
+                                    fetch('/deleteevent', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ eventID: eventID })
+                                    })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            this.closest('tr').remove();
+                                            alert('Мероприятие успешно удалено.');
+                                        } else {
+                                            alert('Ошибка при удалении мероприятия.');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error deleting event:', error);
+                                        alert('Ошибка при удалении мероприятия.');
+                                    });
+                                });
+                            });
+
+                            // Обработка нажатия на кнопку "Посмотреть участников"
+                            document.querySelectorAll('.viewParticipantsButton').forEach(button => {
+                                button.addEventListener('click', function () {
+                                    const eventID = this.getAttribute('data-event-id');
+                                    fetch(`/api/eventParticipants?eventID=${eventID}`)
+                                        .then(response => response.json())
+                                        .then(participants => {
+                                            const participantsList = document.getElementById('participantsList');
+                                            const participantsDiv = document.getElementById('participants');
+                                            participantsDiv.innerHTML = '';
+                                            if (participants.length > 0) {
+                                                participants.forEach(participant => {
+                                                    const participantDiv = document.createElement('div');
+                                                    participantDiv.className = 'participant-item';
+                                                    participantDiv.innerHTML = `
+                                                        <div class="participant-name">${participant.name} ${participant.surname}</div>
+                                                        <div class="participant-email">${participant.userEmail}</div>
+                                                    `;
+                                                    participantsDiv.appendChild(participantDiv);
+                                                });
+                                                participantsList.style.display = 'block';
+                                            } else {
+                                                participantsDiv.innerHTML = '<p class="no-participants">На это мероприятие пока никто не зарегистрировался.</p>';
+                                                participantsList.style.display = 'block';
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error fetching participants:', error);
+                                            alert('Ошибка при получении участников.');
+                                        });
+                                });
+                            });
+                        } else {
+                            eventsList.innerHTML = '<p class="no-events">У вас пока нет мероприятий.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching events:', error);
+                        document.getElementById('eventsList').innerHTML = '<p>Ошибка при получении мероприятий.</p>';
+                    });
+            }
+        });
+
+        document.getElementById('createEventButton').addEventListener('click', function () {
+            const params = new URLSearchParams(window.location.search);
+            const email = params.get('email');
+            window.location.href = `/createevent?email=${encodeURIComponent(email)}`;
+        });
+    </script>
+</body>
+</html>

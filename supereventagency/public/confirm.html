@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        .confirmation-container {
+            text-align: center;
+        }
+        .error {
+            color: red;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <h2>Подтверждение</h2>
+        <p id="confirmEmailText">На вашу почту пришел код подтверждения.</p>
+        <form id="confirmForm" action="/confirm" method="POST">
+            <input type="hidden" id="confirmEmail" name="userEmail" required>
+            <label for="confirmCode">Код подтверждения:</label>
+            <input type="text" id="confirmCode" name="confirmationCode" required>
+            <div id="confirmationCodeError" class="error"></div>
+            <button type="submit">Подтвердить</button>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            const email = params.get('email');
+            if (email) {
+                document.getElementById('confirmEmail').value = email;
+            }
+
+            const error = params.get('error');
+            if (error) {
+                document.getElementById('confirmationCodeError').textContent = error;
+            }
+        });
+    </script>
+</body>
+</html>
